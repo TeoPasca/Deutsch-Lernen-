@@ -57,6 +57,31 @@ def practice(file_path_lektion, file_path_lektion_correct, language):
 def print_menu():
     print(f"+------------------+\n|1. Datei wählen   |\n+------------------+\n|Drücken Sie q/r   |\n+------------------+")
 
+def search_word():
+    file_path = os.path.join(ROOT_DIR, "Deutsch lernen", "Lektionen")
+    my_dic={}
+    while True:
+        for filename in os.listdir(file_path):
+         with open(os.path.join(file_path, filename), 'r') as f:
+            my_dic.update(json.load(f))
+
+        color = "green"
+        search = input("Suchen:").strip()
+        if search in my_dic:
+            print(f'Das Wort für {colored(search, attrs=["bold"])} ist {colored(my_dic[search], color)}')
+            
+        elif search in my_dic.values():
+            for key, value in my_dic.items():
+                if value == search:
+                    print(f'Das Wort für {colored(search, attrs=["bold"])} ist {colored(key, color)}')
+                    break
+        elif search == "q":
+            exit()
+        elif search == "r":
+            print("back")
+        else:
+            print(colored("Das Wort ist nicht vorhanden", "red"))
+
 
 def enter(name_file):
     file_path_lektion = os.path.join(ROOT_DIR, "Deutsch lernen", "Lektionen", name_file)
@@ -64,12 +89,12 @@ def enter(name_file):
     my_dict = load_dict(file_path_lektion)
 
     while True:
-        key = input(colored("Wort: ", "black", "on_white"))
+        key = input(colored("Wort: ", "black", "on_white")).rstrip()
         if key == "q":
             sys.exit()
         elif key == "r":
             list_text()
-        value = input("Cuvant: ")
+        value = input("Cuvant: ").rstrip()
         if value == "q":
             break
         elif value == "w":
@@ -96,7 +121,7 @@ def choose_data(language, ro, color):
             if os.path.exists(file_path_lektion):
                 practice(file_path_lektion, file_path_lektion_wrong, language)
             else:
-                print("Datei nicht gefunden. Bitte versuchen Sie es erneut.")
+                print(colored("Datei nicht gefunden. Bitte versuchen Sie es erneut.", "red"))
 
 def choose_data_en():
     file_name = "lektion_"
@@ -151,7 +176,7 @@ def list_directory_ro():
     for files in lektionen_content:
         print(files)
     print("+------------------+")
-    choose_data("rumänische", "_correct_ro", "black")
+    choose_data("rumänische", "_correct_ro", "dark_grey")
 def list_directory_de():
     print_menu()
     lektionen_dir = os.path.join(ROOT_DIR, "Deutsch lernen","Lektionen")
@@ -159,7 +184,7 @@ def list_directory_de():
     for files in lektionen_content:
         print(files)
     print("+------------------+")
-    choose_data("deutsche", "_correct", "yellow")
+    choose_data("deutsche", "_correct", "light_yellow")
 def list_directory():
     print("+----------------+")
     print("|1.Datei erstellen|")
@@ -190,6 +215,7 @@ def list_text():
     print("|1 Lektion erstellen\wählen|")
     print("|2.Üben                    |") 
     print("|3.Exerciții               |")
+    print("|4.Suchen wortes           |")
     print("+--------------------------+")
     print("|Drücken Sie q/r           |")
     print("+--------------------------+")
@@ -201,6 +227,8 @@ def list_text():
             list_directory_de()
         elif choose_1 == "3":
             list_directory_ro()
+        elif choose_1 == "4":
+            search_word()
         elif choose_1 == "q":
             sys.exit()
         else:
