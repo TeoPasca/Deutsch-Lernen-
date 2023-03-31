@@ -24,13 +24,46 @@ def save_dict(file_path, my_dict):
 def select_word(my_dict):
     selected_word = random.choice(list(my_dict.keys()))
     return selected_word, my_dict[selected_word]
+def practice_ro(file_path_lektion, file_path_lektion_correct, language):
+    my_dict = load_dict(file_path_lektion)
+    removed_dict = load_dict(file_path_lektion_correct)
+    
+    if language == "deutsche":
+        new_dict_ro = {v: k for k, v in my_dict.items()}
+    # elif language == "deutsche":
+    #     new_dict_de = {k: v for k, v in my_dict.items()}
+
+    ro_select = random.choice(list(new_dict_ro.keys()))
+    while True:
+        if not my_dict:
+            print(colored("Keine Worte mehr zum Üben!", "red"))
+            break
+        ro_select, correct_answer = select_word(new_dict_ro)
+        for i in range(3):
+            user_input = input(f"Wie lautet die {language} Übersetzung von '{colored(ro_select, attrs=['bold'])}': ")
+            if user_input == correct_answer:
+                print(colored("Richtig!", "green"))
+                removed_dict[ro_select] = new_dict_ro.pop(ro_select)
+                save_dict(file_path_lektion_correct, removed_dict)
+                break
+            elif user_input.lower() == "q":
+                sys.exit()
+            elif user_input.lower() == "r":
+                list_text()
+            else:
+                print(colored("Incorrect", "red"))
+                if i == 2:
+                    print(colored("Die richtige Übersetzung ist:", "red"), colored(correct_answer, "green"))
+    return
 
 def practice(file_path_lektion, file_path_lektion_correct, language):
     my_dict = load_dict(file_path_lektion)
     removed_dict = load_dict(file_path_lektion_correct)
 
-    if language == "rumänische":
+    if language == "deutsche":
         new_dict = {v: k for k, v in my_dict.items()}
+    elif language == "deutsche":
+        new_dict = {k: v for k, v in my_dict.items()}
 
     while True:
         if not my_dict:
@@ -78,7 +111,7 @@ def search_word():
         elif search == "q":
             exit()
         elif search == "r":
-            print("back")
+            list_text()
         else:
             print(colored("Das Wort ist nicht vorhanden", "red"))
 
@@ -102,7 +135,27 @@ def enter(name_file):
         my_dict[key] = value
         save_dict(file_path_lektion, my_dict)
 
-    return            
+    return
+def choose_data_ro(language, ro, color):
+    file_name = "lektion_"
+    format = ".json"
+    string ="Wählen:"
+    bold = attr=['bold']
+
+    while True:
+        user_input = input(f"{colored(string ,color, attrs=['bold'] )}{file_name}")
+        if user_input == "r":
+            list_text()
+        elif user_input == "q":
+            list_text()
+        else:
+            file_path_lektion = os.path.join(ROOT_DIR, "Deutsch lernen", "Lektionen", f"{file_name}{user_input}{format}")
+            file_path_lektion_wrong = os.path.join(ROOT_DIR, "Deutsch lernen", "Niedrige Priorität", f"{file_name}{user_input}{ro}{format}")
+            if os.path.exists(file_path_lektion):
+                practice_ro(file_path_lektion, file_path_lektion_wrong, language)
+            else:
+                print(colored("Datei nicht gefunden. Bitte versuchen Sie es erneut.", "red"))
+           
 def choose_data(language, ro, color):
     file_name = "lektion_"
     format = ".json"
@@ -176,7 +229,7 @@ def list_directory_ro():
     for files in lektionen_content:
         print(files)
     print("+------------------+")
-    choose_data("rumänische", "_correct_ro", "dark_grey")
+    choose_data_ro("deutsche", "_correct_ro", "dark_grey")
 def list_directory_de():
     print_menu()
     lektionen_dir = os.path.join(ROOT_DIR, "Deutsch lernen","Lektionen")
@@ -184,7 +237,7 @@ def list_directory_de():
     for files in lektionen_content:
         print(files)
     print("+------------------+")
-    choose_data("deutsche", "_correct", "light_yellow")
+    choose_data("rumänische", "_correct", "light_yellow")
 def list_directory():
     print("+----------------+")
     print("|1.Datei erstellen|")
